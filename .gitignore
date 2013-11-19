@@ -28,3 +28,4 @@ target/
 *.ipr
 *~
 *.swp
+push_maven.gradle
