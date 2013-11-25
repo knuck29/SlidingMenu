@@ -8,7 +8,6 @@ buildscript {
 }
 apply plugin: 'android-library'
 apply plugin: 'maven'
-apply from: '../push_maven.gradle'
 
 repositories {
     mavenCentral()
@@ -17,7 +16,6 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:19.0.0'
     compile 'com.android.support:appcompat-v7:19.0.0'
-
 }
 
 android {
@@ -35,3 +33,34 @@ android {
 
 group = 'com.jeremyfeinstein.slidingmenu'
 version = '1.3-SNAPSHOT'
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+uploadArchives {
+    repositories {
+        // the maven plugin features this deployer
+        mavenDeployer {
+
+            def sonatypeRepositoryUrl
+
+            if (isReleaseBuild()) {
+                println 'RELEASE BUILD'
+                sonatypeRepositoryUrl = "file:///Users/Shared/MavenRepo/Release/"
+            }
+            else {
+                println 'DEBUG BUILD'
+                sonatypeRepositoryUrl = "file:///Users/Shared/MavenRepo/Snapshots/"
+            }
+
+            repository(url: sonatypeRepositoryUrl)
+
+            pom.project {
+                artifactId 'parent'
+                name 'SlidingMenu (Parent)'
+                packaging 'aar'
+            }
+        }
+    }
+}
